@@ -5,7 +5,9 @@ output:
     df_print: kable
     toc: true
     self_contained: true
-    keep_md: yes
+  github_document:
+    df_print: kable
+    toc: true
 ---
 
 # Setup
@@ -318,7 +320,7 @@ fit_lines = df %>%
 The estimates of $\phi$ (`phi`, the precision parameter of the beta distribution) are a little hard to interpret, so instead we'll derive a posterior distribution for standard deviation. We can use the fact that the standard deviation $\sigma$ of a Beta distribution is:
 
 $$
-\sigma = \sqrt{\mu * (1 - \mu) / (1 + \phi)}
+\sigma = \sqrt{\mu (1 - \mu) / (1 + \phi)}
 $$
 
 Thus we can transform samples from the distribution of $\mu$ (`mu`) and $\phi$ (`phi`) into samples from the distribution of $\sigma$ (`sd`):
