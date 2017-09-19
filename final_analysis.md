@@ -400,7 +400,7 @@ fit_lines = df %>%
 The estimates of *ϕ* (`phi`, the precision parameter of the beta distribution) are a little hard to interpret, so instead we'll derive a posterior distribution for standard deviation. We can use the fact that the standard deviation *σ* of a Beta distribution is:
 
 $$
-\\sigma = \\sqrt{\\mu (1 - \\mu) / (1 + \\phi)}
+\\sigma = \\sqrt{\\frac{\\mu (1 - \\mu)}{(1 + \\phi)}}
 $$
 
 Thus we can transform samples from the distribution of *μ* (`mu`) and *ϕ* (`phi`) into samples from the distribution of *σ* (`sd`):
@@ -501,7 +501,9 @@ plot_means_vs_text
 
     ## Picking joint bandwidth of 0.00259
 
-![](final_analysis_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-28-1.png) Difference to dot50:
+![](final_analysis_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-28-1.png)
+
+Difference to dot50:
 
 ``` r
 plot_means_vs_dot50 = last_trial %>%
@@ -554,7 +556,9 @@ plot_prec_vs_text
 
     ## Picking joint bandwidth of 0.0015
 
-![](final_analysis_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-32-1.png) Difference to dot50:
+![](final_analysis_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-32-1.png)
+
+Difference to dot50:
 
 ``` r
 plot_prec_vs_dot50 = last_trial %>%

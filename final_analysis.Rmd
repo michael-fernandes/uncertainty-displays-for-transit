@@ -437,6 +437,7 @@ plot_means_vs_text = last_trial %>%
   coord_cartesian(xlim = c(-0.05, 0.09), ylim = c(1, 10.5))
 plot_means_vs_text
 ```
+
 Difference to dot50:
 
 ```{r}
@@ -502,6 +503,7 @@ plot_prec_vs_text = last_trial %>%
   coord_cartesian(ylim = c(1, 10.5), xlim = c(-.06, 0.05))
 plot_prec_vs_text
 ```
+
 Difference to dot50:
 
 ```{r}
