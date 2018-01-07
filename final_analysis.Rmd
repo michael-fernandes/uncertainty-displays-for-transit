@@ -429,6 +429,7 @@ Difference to control:
 plot_means_vs_text = last_trial %>%
   mutate(vis = fct_relevel(vis, "none")) %>%
   compare_levels(mu, by = vis, comparison = control) %>%
+  ungroup() %>%
   mutate(vis = factor(vis, levels = c("none - none", levels(vis)))) %>%
   bind_rows(data_frame(vis = factor("none - none", levels = levels(.$vis)), mu = 0)) %>%
   ggplot(aes(y = vis, x = mu)) +
@@ -444,6 +445,7 @@ Difference to dot50:
 plot_means_vs_dot50 = last_trial %>%
   mutate(vis = fct_relevel(vis, "dot50")) %>%
   compare_levels(mu, by = vis, comparison = control) %>%
+  ungroup() %>%
   mutate(vis = factor(vis, levels = c(levels(vis), "dot50 - dot50"))) %>%
   bind_rows(data_frame(vis = factor("dot50 - dot50", levels = levels(.$vis)), mu = 0)) %>%
   ggplot(aes(y = vis, x = mu)) +
@@ -476,6 +478,26 @@ plot_grid(
 )
 ```
 
+Other misc differences: dot20
+
+```{r}
+dot20_mean_diffs = last_trial %>%
+  mutate(vis = fct_relevel(vis, "dot20")) %>%
+  compare_levels(mu, by = vis, comparison = control) 
+
+dot20_mean_diffs %>%
+  median_qi(mu * 100)
+
+dot20_mean_diffs %>%
+  ungroup() %>%
+  mutate(vis = factor(vis, levels = c(levels(vis), "dot20 - dot20"))) %>%
+  bind_rows(data_frame(vis = factor("dot20 - dot20", levels = levels(.$vis)), mu = 0)) %>%
+  ggplot(aes(y = vis, x = mu)) +
+  geom_vline(xintercept = 0, color = "black", linetype = "dashed") +
+  geom_halfeyeh(fun.data = median_qih, fatten.point = 1.3) +
+  coord_cartesian(xlim = c(-0.11, 0.01), ylim = c(1, 10.5))
+```
+
 ### Standard deviation
 
 Conditional standard deviation (for "average" person on "average" scenario) on last trial:
@@ -495,6 +517,7 @@ Difference to control:
 plot_prec_vs_text = last_trial %>%
   mutate(vis = fct_relevel(vis, "none")) %>%
   compare_levels(sd, by = vis, comparison = control) %>%
+  ungroup() %>%
   mutate(vis = factor(vis, levels = c("none - none", levels(vis)))) %>%
   bind_rows(data_frame(vis = factor("none - none", levels = levels(.$vis)), sd = 0)) %>%
   ggplot(aes(y = vis, x = sd)) +
@@ -510,6 +533,7 @@ Difference to dot50:
 plot_prec_vs_dot50 = last_trial %>%
   mutate(vis = fct_relevel(vis, "dot50")) %>%
   compare_levels(sd, by = vis, comparison = control) %>%
+  ungroup() %>%
   mutate(vis = factor(vis, levels = c(levels(vis), "dot50 - dot50"))) %>%
   bind_rows(data_frame(vis = factor("dot50 - dot50", levels = levels(.$vis)), sd = 0)) %>%
   ggplot(aes(y = vis, x = sd)) +
@@ -518,6 +542,27 @@ plot_prec_vs_dot50 = last_trial %>%
   coord_cartesian(xlim = c(0, .085), ylim = c(1, 10.5))
 plot_prec_vs_dot50
 ```
+
+Other misc differences: dot20
+
+```{r}
+dot20_prec_diffs = last_trial %>%
+  mutate(vis = fct_relevel(vis, "dot20")) %>%
+  compare_levels(sd, by = vis, comparison = control)
+
+dot20_prec_diffs %>%
+  median_qi(sd * 100)
+
+dot20_prec_diffs %>%
+  ungroup() %>%
+  mutate(vis = factor(vis, levels = c(levels(vis), "dot20 - dot20"))) %>%
+  bind_rows(data_frame(vis = factor("dot20 - dot20", levels = levels(.$vis)), sd = 0)) %>%
+  ggplot(aes(y = vis, x = sd)) +
+  geom_vline(xintercept = 0, color = "black", linetype = "dashed") +
+  geom_halfeyeh(fun.data = median_qih, fatten.point = 1.3) +
+  coord_cartesian(ylim = c(1, 10.5))
+```
+
 
 ```{r, fig.width = 8, fig.height = 2.5, eval = FALSE, include = FALSE}
 #altogether (not for md)
@@ -572,7 +617,6 @@ last_trial_plots = plot_grid(
   axis = "b"
 )
 last_trial_plots
-
 pdf(file = "last_trial_plots.pdf", useDingbats = FALSE, width = 8, height = 2.5)
 last_trial_plots
 dev.off()
