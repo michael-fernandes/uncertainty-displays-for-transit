@@ -72,17 +72,14 @@ df = read.csv("data/final_trials.csv") %>%
 head(df)
 ```
 
-    ## # A tibble: 6 x 17
-    ##   vis   arri~ part~ dist~ scen~ trial    mu  sigma    nu   tau  mode dura~
-    ##   <fct> <lgl> <fct> <fct> <fct> <int> <dbl>  <dbl> <dbl> <dbl> <int> <dbl>
-    ## 1 dot50 F     p369  d060  s3        0  34.4 0.104  -7.67  1.97    18 22.9 
-    ## 2 dot50 F     p369  d036  s3        1  36.1 0.115  -3.05  2.02    20  8.40
-    ## 3 dot50 F     p369  d001  s3        2  24.7 0.0507 -1.71  1.63    10 17.2 
-    ## 4 dot50 F     p369  d001  s3        3  24.7 0.0507 -1.71  1.63    10 29.2 
-    ## 5 dot50 F     p369  d106  s3        4  30.7 0.0813 -2.88  1.85    15 12.6 
-    ## 6 dot50 F     p369  d067  s3        5  24.7 0.0509 -4.64  1.63    10 11.8 
-    ## # ... with 5 more variables: response <int>, payoff <int>, expected_payoff
-    ## #   <dbl>, optimal_payoff <dbl>, expected_over_optimal <dbl>
+| vis   | arrival | participant | distribution | scenario |  trial|        mu|      sigma|         nu|       tau|  mode|  duration|  response|  payoff|  expected\_payoff|  optimal\_payoff|  expected\_over\_optimal|
+|:------|:--------|:------------|:-------------|:---------|------:|---------:|----------:|----------:|---------:|-----:|---------:|---------:|-------:|-----------------:|----------------:|------------------------:|
+| dot50 | FALSE   | p369        | d060         | s3       |      0|  34.43021|  0.1038757|  -7.673986|  1.969532|    18|  22.85116|        16|    2151|          1857.236|         1987.309|                0.9345483|
+| dot50 | FALSE   | p369        | d036         | s3       |      1|  36.11904|  0.1151801|  -3.047448|  2.024402|    20|   8.40406|        18|    2031|          1743.631|         1916.901|                0.9096093|
+| dot50 | FALSE   | p369        | d001         | s3       |      2|  24.69326|  0.0507094|  -1.711638|  1.627509|    10|  17.24604|         9|    2078|          1601.720|         1949.349|                0.8216692|
+| dot50 | FALSE   | p369        | d001         | s3       |      3|  24.69326|  0.0507094|  -1.711638|  1.627509|    10|  29.20262|         9|    2095|          1601.720|         1949.349|                0.8216692|
+| dot50 | FALSE   | p369        | d106         | s3       |      4|  30.73842|  0.0813301|  -2.877004|  1.845427|    15|  12.57680|        14|    2084|          1722.179|         1944.729|                0.8855624|
+| dot50 | FALSE   | p369        | d067         | s3       |      5|  24.73388|  0.0508896|  -4.638728|  1.629045|    10|  11.80909|         8|    2070|          1839.135|         1967.857|                0.9345875|
 
 The set of conditions looks like this:
 
@@ -92,30 +89,28 @@ df %>%
   summarise(n(), length(unique(participant)))
 ```
 
-    ## # A tibble: 20 x 4
-    ## # Groups: vis [?]
-    ##    vis         arrival `n()` `length(unique(participant))`
-    ##    <fctr>      <lgl>   <int>                         <int>
-    ##  1 cdf         F        1092                            25
-    ##  2 cdf         T         599                            15
-    ##  3 dot20       F         685                            17
-    ##  4 dot20       T         734                            18
-    ##  5 dot50       F         635                            16
-    ##  6 dot50       T         705                            17
-    ##  7 interval    F         864                            21
-    ##  8 interval    T         793                            18
-    ##  9 none        F         651                            16
-    ## 10 none        T         747                            18
-    ## 11 pdf         F         705                            17
-    ## 12 pdf         T        3840                            57
-    ## 13 pdfinterval F         605                            15
-    ## 14 pdfinterval T         750                            18
-    ## 15 text        F         602                            15
-    ## 16 text        T         827                            20
-    ## 17 text60      F         647                            16
-    ## 18 text60      T         768                            19
-    ## 19 text99      F         537                            13
-    ## 20 text99      T        2616                            41
+| vis         | arrival |   n()|  length(unique(participant))|
+|:------------|:--------|-----:|----------------------------:|
+| cdf         | FALSE   |  1092|                           25|
+| cdf         | TRUE    |   599|                           15|
+| dot20       | FALSE   |   685|                           17|
+| dot20       | TRUE    |   734|                           18|
+| dot50       | FALSE   |   635|                           16|
+| dot50       | TRUE    |   705|                           17|
+| interval    | FALSE   |   864|                           21|
+| interval    | TRUE    |   793|                           18|
+| none        | FALSE   |   651|                           16|
+| none        | TRUE    |   747|                           18|
+| pdf         | FALSE   |   705|                           17|
+| pdf         | TRUE    |  3840|                           57|
+| pdfinterval | FALSE   |   605|                           15|
+| pdfinterval | TRUE    |   750|                           18|
+| text        | FALSE   |   602|                           15|
+| text        | TRUE    |   827|                           20|
+| text60      | FALSE   |   647|                           16|
+| text60      | TRUE    |   768|                           19|
+| text99      | FALSE   |   537|                           13|
+| text99      | TRUE    |  2616|                           41|
 
 We will add `trial_normalized`, which will go from -0.5 (the first trial) to 0.5 (the last trial) to help model convergence.
 
@@ -181,19 +176,14 @@ An excerpt from the cleaned dataset:
 head(df)
 ```
 
-    ## # A tibble: 6 x 22
-    ##   vis   arri~ part~ dist~ scen~ trial    mu  sigma    nu   tau  mode dura~
-    ##   <fct> <lgl> <fct> <fct> <fct> <int> <dbl>  <dbl> <dbl> <dbl> <int> <dbl>
-    ## 1 dot50 F     p369  d060  s3        0  34.4 0.104  -7.67  1.97    18 22.9 
-    ## 2 dot50 F     p369  d036  s3        1  36.1 0.115  -3.05  2.02    20  8.40
-    ## 3 dot50 F     p369  d001  s3        2  24.7 0.0507 -1.71  1.63    10 17.2 
-    ## 4 dot50 F     p369  d001  s3        3  24.7 0.0507 -1.71  1.63    10 29.2 
-    ## 5 dot50 F     p369  d106  s3        4  30.7 0.0813 -2.88  1.85    15 12.6 
-    ## 6 dot50 F     p369  d067  s3        5  24.7 0.0509 -4.64  1.63    10 11.8 
-    ## # ... with 10 more variables: response <int>, payoff <int>,
-    ## #   expected_payoff <dbl>, optimal_payoff <dbl>, expected_over_optimal
-    ## #   <dbl>, trial_normalized <dbl>, text_interval <dbl>, text60_interval
-    ## #   <dbl>, text99_interval <dbl>, expected_over_optimal_adjusted <dbl>
+| vis   | arrival | participant | distribution | scenario |  trial|        mu|      sigma|         nu|       tau|  mode|  duration|  response|  payoff|  expected\_payoff|  optimal\_payoff|  expected\_over\_optimal|  trial\_normalized|  text\_interval|  text60\_interval|  text99\_interval|  expected\_over\_optimal\_adjusted|
+|:------|:--------|:------------|:-------------|:---------|------:|---------:|----------:|----------:|---------:|-----:|---------:|---------:|-------:|-----------------:|----------------:|------------------------:|------------------:|---------------:|-----------------:|-----------------:|----------------------------------:|
+| dot50 | FALSE   | p369        | d060         | s3       |      0|  34.43021|  0.1038757|  -7.673986|  1.969532|    18|  22.85116|        16|    2151|          1857.236|         1987.309|                0.9345483|         -0.5000000|              16|                18|                12|                          0.9345483|
+| dot50 | FALSE   | p369        | d036         | s3       |      1|  36.11904|  0.1151801|  -3.047448|  2.024402|    20|   8.40406|        18|    2031|          1743.631|         1916.901|                0.9096093|         -0.4743590|              17|                20|                 9|                          0.9096093|
+| dot50 | FALSE   | p369        | d001         | s3       |      2|  24.69326|  0.0507094|  -1.711638|  1.627509|    10|  17.24604|         9|    2078|          1601.720|         1949.349|                0.8216692|         -0.4487179|               8|                 9|                 2|                          0.8216692|
+| dot50 | FALSE   | p369        | d001         | s3       |      3|  24.69326|  0.0507094|  -1.711638|  1.627509|    10|  29.20262|         9|    2095|          1601.720|         1949.349|                0.8216692|         -0.4230769|               8|                 9|                 2|                          0.8216692|
+| dot50 | FALSE   | p369        | d106         | s3       |      4|  30.73842|  0.0813301|  -2.877004|  1.845427|    15|  12.57680|        14|    2084|          1722.179|         1944.729|                0.8855624|         -0.3974359|              13|                15|                 6|                          0.8855624|
+| dot50 | FALSE   | p369        | d067         | s3       |      5|  24.73388|  0.0508896|  -4.638728|  1.629045|    10|  11.80909|         8|    2070|          1839.135|         1967.857|                0.9345875|         -0.3717949|               8|                 9|                 4|                          0.9345875|
 
 Naive learning curves
 ---------------------
@@ -250,72 +240,40 @@ get_prior(bf(
   data = df, family = Beta)
 ```
 
-    ##                  prior     class                            coef
-    ## 1                              b                                
-    ## 2                              b                trial_normalized
-    ## 3               lkj(1)       cor                                
-    ## 4                            cor                                
-    ## 5  student_t(3, 0, 10) Intercept                                
-    ## 6  student_t(3, 0, 10)        sd                                
-    ## 7                             sd                                
-    ## 8                             sd                       Intercept
-    ## 9                             sd                trial_normalized
-    ## 10                            sd                                
-    ## 11                            sd                       Intercept
-    ## 12                             b                                
-    ## 13                             b                trial_normalized
-    ## 14                             b                        visdot20
-    ## 15                             b       visdot20:trial_normalized
-    ## 16                             b                        visdot50
-    ## 17                             b       visdot50:trial_normalized
-    ## 18                             b                     visinterval
-    ## 19                             b    visinterval:trial_normalized
-    ## 20                             b                         visnone
-    ## 21                             b        visnone:trial_normalized
-    ## 22                             b                          vispdf
-    ## 23                             b         vispdf:trial_normalized
-    ## 24                             b                  vispdfinterval
-    ## 25                             b vispdfinterval:trial_normalized
-    ## 26                             b                         vistext
-    ## 27                             b        vistext:trial_normalized
-    ## 28                             b                       vistext60
-    ## 29                             b      vistext60:trial_normalized
-    ## 30                             b                       vistext99
-    ## 31                             b      vistext99:trial_normalized
-    ## 32 student_t(3, 0, 10) Intercept                                
-    ##          group resp dpar nlpar bound
-    ## 1                                   
-    ## 2                                   
-    ## 3                                   
-    ## 4  participant                      
-    ## 5                                   
-    ## 6                                   
-    ## 7  participant                      
-    ## 8  participant                      
-    ## 9  participant                      
-    ## 10    scenario                      
-    ## 11    scenario                      
-    ## 12                   phi            
-    ## 13                   phi            
-    ## 14                   phi            
-    ## 15                   phi            
-    ## 16                   phi            
-    ## 17                   phi            
-    ## 18                   phi            
-    ## 19                   phi            
-    ## 20                   phi            
-    ## 21                   phi            
-    ## 22                   phi            
-    ## 23                   phi            
-    ## 24                   phi            
-    ## 25                   phi            
-    ## 26                   phi            
-    ## 27                   phi            
-    ## 28                   phi            
-    ## 29                   phi            
-    ## 30                   phi            
-    ## 31                   phi            
-    ## 32                   phi
+| prior                | class     | coef                             | group       | resp | dpar | nlpar | bound |
+|:---------------------|:----------|:---------------------------------|:------------|:-----|:-----|:------|:------|
+|                      | b         |                                  |             |      |      |       |       |
+|                      | b         | trial\_normalized                |             |      |      |       |       |
+| lkj(1)               | cor       |                                  |             |      |      |       |       |
+|                      | cor       |                                  | participant |      |      |       |       |
+| student\_t(3, 0, 10) | Intercept |                                  |             |      |      |       |       |
+| student\_t(3, 0, 10) | sd        |                                  |             |      |      |       |       |
+|                      | sd        |                                  | participant |      |      |       |       |
+|                      | sd        | Intercept                        | participant |      |      |       |       |
+|                      | sd        | trial\_normalized                | participant |      |      |       |       |
+|                      | sd        |                                  | scenario    |      |      |       |       |
+|                      | sd        | Intercept                        | scenario    |      |      |       |       |
+|                      | b         |                                  |             |      | phi  |       |       |
+|                      | b         | trial\_normalized                |             |      | phi  |       |       |
+|                      | b         | visdot20                         |             |      | phi  |       |       |
+|                      | b         | visdot20:trial\_normalized       |             |      | phi  |       |       |
+|                      | b         | visdot50                         |             |      | phi  |       |       |
+|                      | b         | visdot50:trial\_normalized       |             |      | phi  |       |       |
+|                      | b         | visinterval                      |             |      | phi  |       |       |
+|                      | b         | visinterval:trial\_normalized    |             |      | phi  |       |       |
+|                      | b         | visnone                          |             |      | phi  |       |       |
+|                      | b         | visnone:trial\_normalized        |             |      | phi  |       |       |
+|                      | b         | vispdf                           |             |      | phi  |       |       |
+|                      | b         | vispdf:trial\_normalized         |             |      | phi  |       |       |
+|                      | b         | vispdfinterval                   |             |      | phi  |       |       |
+|                      | b         | vispdfinterval:trial\_normalized |             |      | phi  |       |       |
+|                      | b         | vistext                          |             |      | phi  |       |       |
+|                      | b         | vistext:trial\_normalized        |             |      | phi  |       |       |
+|                      | b         | vistext60                        |             |      | phi  |       |       |
+|                      | b         | vistext60:trial\_normalized      |             |      | phi  |       |       |
+|                      | b         | vistext99                        |             |      | phi  |       |       |
+|                      | b         | vistext99:trial\_normalized      |             |      | phi  |       |       |
+| student\_t(3, 0, 10) | Intercept |                                  |             |      | phi  |       |       |
 
 We'll set weakly-informed priors for the various classes of coefficients, as per [our pre-registration](http://aspredicted.org/blind.php?x=g2yb2f):
 
@@ -581,21 +539,53 @@ last_trial %>%
   median_qi()
 ```
 
-    ## # A tibble: 45 x 5
-    ## # Groups: vis [45]
-    ##    vis                      mu  conf.low conf.high .prob
-    ##    <fctr>                <dbl>     <dbl>     <dbl> <dbl>
-    ##  1 text - none        -0.0101  -0.0508      0.0262 0.950
-    ##  2 interval - none     0.00195 -0.0367      0.0373 0.950
-    ##  3 pdf - none          0.0119  -0.0119      0.0464 0.950
-    ##  4 pdfinterval - none  0.0178  -0.00962     0.0530 0.950
-    ##  5 text60 - none       0.0198  -0.00574     0.0558 0.950
-    ##  6 text99 - none       0.0232  -0.00106     0.0585 0.950
-    ##  7 dot20 - none        0.0242  -0.000583    0.0601 0.950
-    ##  8 cdf - none          0.0313   0.00715     0.0684 0.950
-    ##  9 dot50 - none        0.0444   0.0214      0.0832 0.950
-    ## 10 interval - text     0.0120  -0.0256      0.0540 0.950
-    ## # ... with 35 more rows
+| vis                    |          mu|    conf.low|  conf.high|  .prob|
+|:-----------------------|-----------:|-----------:|----------:|------:|
+| text - none            |  -0.0101293|  -0.0508042|  0.0261662|   0.95|
+| interval - none        |   0.0019492|  -0.0367437|  0.0372953|   0.95|
+| pdf - none             |   0.0119112|  -0.0119375|  0.0463781|   0.95|
+| pdfinterval - none     |   0.0178383|  -0.0096189|  0.0529789|   0.95|
+| text60 - none          |   0.0197632|  -0.0057372|  0.0558202|   0.95|
+| text99 - none          |   0.0232412|  -0.0010584|  0.0585172|   0.95|
+| dot20 - none           |   0.0242469|  -0.0005829|  0.0600908|   0.95|
+| cdf - none             |   0.0312723|   0.0071530|  0.0683867|   0.95|
+| dot50 - none           |   0.0443898|   0.0214450|  0.0832301|   0.95|
+| interval - text        |   0.0119831|  -0.0256268|  0.0540434|   0.95|
+| pdf - text             |   0.0223543|  -0.0052890|  0.0616844|   0.95|
+| pdfinterval - text     |   0.0280364|  -0.0031028|  0.0704213|   0.95|
+| text60 - text          |   0.0299372|  -0.0009649|  0.0713668|   0.95|
+| text99 - text          |   0.0336868|   0.0052421|  0.0764226|   0.95|
+| dot20 - text           |   0.0347286|   0.0054693|  0.0787502|   0.95|
+| cdf - text             |   0.0414628|   0.0137816|  0.0866828|   0.95|
+| dot50 - text           |   0.0547529|   0.0253030|  0.1049426|   0.95|
+| pdf - interval         |   0.0100887|  -0.0160751|  0.0447941|   0.95|
+| pdfinterval - interval |   0.0162713|  -0.0136067|  0.0539405|   0.95|
+| text60 - interval      |   0.0178362|  -0.0111308|  0.0555273|   0.95|
+| text99 - interval      |   0.0213810|  -0.0038926|  0.0592248|   0.95|
+| dot20 - interval       |   0.0221181|  -0.0046657|  0.0603924|   0.95|
+| cdf - interval         |   0.0296165|   0.0047614|  0.0675618|   0.95|
+| dot50 - interval       |   0.0429808|   0.0170976|  0.0845609|   0.95|
+| pdfinterval - pdf      |   0.0060471|  -0.0167498|  0.0283395|   0.95|
+| text60 - pdf           |   0.0076840|  -0.0147366|  0.0309136|   0.95|
+| text99 - pdf           |   0.0113386|  -0.0075102|  0.0329685|   0.95|
+| dot20 - pdf            |   0.0122903|  -0.0077478|  0.0359037|   0.95|
+| cdf - pdf              |   0.0194605|   0.0015843|  0.0429793|   0.95|
+| dot50 - pdf            |   0.0323658|   0.0148170|  0.0602869|   0.95|
+| text60 - pdfinterval   |   0.0017334|  -0.0228791|  0.0275265|   0.95|
+| text99 - pdfinterval   |   0.0051980|  -0.0165034|  0.0304231|   0.95|
+| dot20 - pdfinterval    |   0.0064641|  -0.0163085|  0.0318858|   0.95|
+| cdf - pdfinterval      |   0.0133484|  -0.0065570|  0.0400615|   0.95|
+| dot50 - pdfinterval    |   0.0261410|   0.0080377|  0.0551688|   0.95|
+| text99 - text60        |   0.0033922|  -0.0172474|  0.0270297|   0.95|
+| dot20 - text60         |   0.0045383|  -0.0177236|  0.0289607|   0.95|
+| cdf - text60           |   0.0112517|  -0.0073555|  0.0360511|   0.95|
+| dot50 - text60         |   0.0242408|   0.0066760|  0.0529506|   0.95|
+| dot20 - text99         |   0.0010803|  -0.0208510|  0.0220239|   0.95|
+| cdf - text99           |   0.0079059|  -0.0098663|  0.0291488|   0.95|
+| dot50 - text99         |   0.0208964|   0.0050789|  0.0450512|   0.95|
+| cdf - dot20            |   0.0066960|  -0.0112718|  0.0291389|   0.95|
+| dot50 - dot20          |   0.0199756|   0.0036677|  0.0451732|   0.95|
+| dot50 - cdf            |   0.0130902|  -0.0010975|  0.0315447|   0.95|
 
 ### Standard deviation
 
@@ -669,18 +659,50 @@ last_trial %>%
   median_qi()
 ```
 
-    ## # A tibble: 45 x 5
-    ## # Groups: vis [45]
-    ##    vis                      sd conf.low conf.high .prob
-    ##    <fctr>                <dbl>    <dbl>     <dbl> <dbl>
-    ##  1 text - none         0.0204  -0.00145   0.0436  0.950
-    ##  2 interval - none     0.00590 -0.0143    0.0287  0.950
-    ##  3 pdf - none          0.00316 -0.0139    0.0188  0.950
-    ##  4 pdfinterval - none -0.0146  -0.0326    0.00189 0.950
-    ##  5 text60 - none      -0.0141  -0.0321    0.00208 0.950
-    ##  6 text99 - none      -0.0128  -0.0303    0.00249 0.950
-    ##  7 dot20 - none       -0.0260  -0.0441   -0.0108  0.950
-    ##  8 cdf - none         -0.0267  -0.0441   -0.0120  0.950
-    ##  9 dot50 - none       -0.0387  -0.0565   -0.0244  0.950
-    ## 10 interval - text    -0.0142  -0.0396    0.00883 0.950
-    ## # ... with 35 more rows
+| vis                    |          sd|    conf.low|   conf.high|  .prob|
+|:-----------------------|-----------:|-----------:|-----------:|------:|
+| text - none            |   0.0204108|  -0.0014530|   0.0436031|   0.95|
+| interval - none        |   0.0059013|  -0.0143301|   0.0287323|   0.95|
+| pdf - none             |   0.0031607|  -0.0139023|   0.0187764|   0.95|
+| pdfinterval - none     |  -0.0145964|  -0.0325773|   0.0018895|   0.95|
+| text60 - none          |  -0.0141391|  -0.0320790|   0.0020835|   0.95|
+| text99 - none          |  -0.0128095|  -0.0302626|   0.0024942|   0.95|
+| dot20 - none           |  -0.0259783|  -0.0441025|  -0.0108466|   0.95|
+| cdf - none             |  -0.0266520|  -0.0441394|  -0.0120091|   0.95|
+| dot50 - none           |  -0.0386676|  -0.0565360|  -0.0244286|   0.95|
+| interval - text        |  -0.0142306|  -0.0395827|   0.0088330|   0.95|
+| pdf - text             |  -0.0173831|  -0.0382481|   0.0010952|   0.95|
+| pdfinterval - text     |  -0.0349320|  -0.0582309|  -0.0147643|   0.95|
+| text60 - text          |  -0.0348015|  -0.0572445|  -0.0146841|   0.95|
+| text99 - text          |  -0.0332327|  -0.0548334|  -0.0143890|   0.95|
+| dot20 - text           |  -0.0467725|  -0.0696733|  -0.0270915|   0.95|
+| cdf - text             |  -0.0472202|  -0.0697977|  -0.0287219|   0.95|
+| dot50 - text           |  -0.0589688|  -0.0827837|  -0.0394403|   0.95|
+| pdf - interval         |  -0.0026487|  -0.0224446|   0.0149646|   0.95|
+| pdfinterval - interval |  -0.0205828|  -0.0417137|  -0.0020908|   0.95|
+| text60 - interval      |  -0.0201490|  -0.0406122|  -0.0011737|   0.95|
+| text99 - interval      |  -0.0186046|  -0.0393821|  -0.0011668|   0.95|
+| dot20 - interval       |  -0.0319903|  -0.0521230|  -0.0144694|   0.95|
+| cdf - interval         |  -0.0326434|  -0.0528762|  -0.0153672|   0.95|
+| dot50 - interval       |  -0.0446749|  -0.0658727|  -0.0269324|   0.95|
+| pdfinterval - pdf      |  -0.0179079|  -0.0320477|  -0.0040656|   0.95|
+| text60 - pdf           |  -0.0173322|  -0.0314932|  -0.0033494|   0.95|
+| text99 - pdf           |  -0.0159497|  -0.0286287|  -0.0037348|   0.95|
+| dot20 - pdf            |  -0.0292403|  -0.0431578|  -0.0168155|   0.95|
+| cdf - pdf              |  -0.0297922|  -0.0434379|  -0.0178445|   0.95|
+| dot50 - pdf            |  -0.0418166|  -0.0567124|  -0.0293723|   0.95|
+| text60 - pdfinterval   |   0.0007440|  -0.0143356|   0.0145822|   0.95|
+| text99 - pdfinterval   |   0.0018328|  -0.0119685|   0.0154967|   0.95|
+| dot20 - pdfinterval    |  -0.0113582|  -0.0253834|   0.0014423|   0.95|
+| cdf - pdfinterval      |  -0.0119731|  -0.0258561|   0.0000023|   0.95|
+| dot50 - pdfinterval    |  -0.0239050|  -0.0382035|  -0.0122357|   0.95|
+| text99 - text60        |   0.0014208|  -0.0123420|   0.0145759|   0.95|
+| dot20 - text60         |  -0.0118437|  -0.0259917|   0.0003234|   0.95|
+| cdf - text60           |  -0.0123904|  -0.0265658|  -0.0010589|   0.95|
+| dot50 - text60         |  -0.0244562|  -0.0385044|  -0.0130227|   0.95|
+| dot20 - text99         |  -0.0132646|  -0.0258374|  -0.0016168|   0.95|
+| cdf - text99           |  -0.0139052|  -0.0262479|  -0.0027021|   0.95|
+| dot50 - text99         |  -0.0256314|  -0.0387142|  -0.0146853|   0.95|
+| cdf - dot20            |  -0.0004947|  -0.0114182|   0.0098151|   0.95|
+| dot50 - dot20          |  -0.0125241|  -0.0234830|  -0.0028291|   0.95|
+| dot50 - cdf            |  -0.0119682|  -0.0220507|  -0.0026094|   0.95|
