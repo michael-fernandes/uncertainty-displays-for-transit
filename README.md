@@ -17,7 +17,7 @@ Michael Fernandes, Logan Walls, Sean Munson, Jessica Hullman, and Matthew Kay. "
 
 ## Final analysis
 
-The final analysis is outlined in [final_analysis.md](final_analysis.md) (also available in [html](final_analysis.html)). This anlaysis was compiled from an RMarkdown notebook, [final_analysis.Rmd](final_analysis.Rmd).
+The final analysis is outlined in [final_analysis.md](final_analysis.md) (also available in [html](final_analysis.html)). This analysis was compiled from an RMarkdown notebook, [final_analysis.Rmd](final_analysis.Rmd).
 
 Additional materials from the final analysis are available here:
 
