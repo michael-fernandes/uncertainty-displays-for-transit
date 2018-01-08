@@ -4,10 +4,14 @@ output:
   html_document:
     df_print: kable
     toc: true
-    self_contained: true
+    toc_depth: 3
 ---
 
-# Setup
+## Introduction
+
+This document contains the final analysis of expected / optimal payoffs from the paper.
+
+### Libraries required for this analysis
 
 If you have not installed RStan previously, **install it before installing any other packages below**. Rstan can be finicky to install, so we recommend carefully following the [RStan Getting Started Guide](https://github.com/stan-dev/rstan/wiki/RStan-Getting-Started). **Do not** simply issue ~~`install.packages("rstan")`~~, as this may result in a non-working RStan installation. 
 
@@ -62,7 +66,7 @@ options(mc.cores = parallel::detectCores())
 ```
 
 
-# Load and clean data
+## Load and clean data
 
 First, let's read in the data, do some basic name and datatype cleaning:
 
@@ -145,9 +149,9 @@ head(df)
 
 
 
-# Naive learning curves
+## Naive learning curves
 
-## By vis
+### By vis
 
 Let's start with a high-level view (and a somewhat poor model: linear without accounting for participant or scenario) to see how people improve over the course of the trials in the different conditions:
 
@@ -160,7 +164,7 @@ df %>%
   facet_wrap(~ vis)
 ```
 
-## By arrival
+### By arrival
 
 The other question is if providing the arrival information at the right makes a difference.
 
@@ -172,16 +176,16 @@ df %>%
   stat_smooth(method = loess) 
 ```
 
-It doesn't seem to make a huge difference, so for simplicity we will pool the arrival variants. We saw something similar in the pilot analysis, and a pooled model for arrival is what we [pre-registered](http://aspredicted.org/blind.php?x=g2yb2f).
+It doesn't seem to make a huge difference, so for simplicity we will pool the arrival variants. We saw something similar in the pilot analysis, and a pooled model for arrival is what we [pre-registered](pre-registration.pdf).
 
 
-# Bayesian beta regression
+## Bayesian beta regression
 
 One of the displeasing aspects of applying a linear model here is that it won't work well for prediction --- the data is skewed and bounded above at 1. Since normalized responses will always be between 0 and 1, a logit transformation might help here. This would also ensure that learning curves can approach -- but never pass --- optimal, which is a property we should expect them to have.
 
-## Model
+### Model
 
-To build a model for these data, we'll use a beta regression, which is bounded on (0,1), and uses a logit link.
+To build a model for these data, we'll use a beta regression, which is bounded on (0,1), and uses a logit link. The model and priors here are also what we [pre-registered](pre-registration.pdf).
 
 ### Priors
 
@@ -230,7 +234,7 @@ mbeta = brm(bf(
   )
 ```
 
-Note that the above model takes a long time to run (about 24 hours), primarily because we are estimating a random effect for a factor with only three groups (scenario)---See Gelman (2006), *Prior distributions for variance parameters in hierarchical models* for more discussion of this issue. In retrospect we should have pre-registered a zero-avoiding prior for variance hyperpriors (with a non-zero-centered tighter truncated t prior it only takes an hour or two to fit and yields relatively similar estimates), but we pre-registered the above priors, so we'll stick to them. To save time we'll just load the fitted model from disk:
+Note that the above model takes a long time to run (about 24 hours), primarily because we are estimating a random effect for a factor with only three groups (scenario)---See Gelman (2006), *Prior distributions for variance parameters in hierarchical models* for more discussion of this issue. In retrospect we should have pre-registered a zero-avoiding prior for variance hyperpriors (a model with a non-zero-centered tighter truncated t prior only takes an hour or two to fit and yields relatively similar estimates), but we pre-registered the above priors, so we'll stick to them. To save time we'll just load the fitted model from disk:
 
 ```{r}
 mbeta = read_rds("models/final_model.rds")
@@ -300,7 +304,7 @@ Above, the red line is the predicted median, and the blue bands are predictive i
 
 ## Model-based learning curves
 
-First we'll generate samples of fit lines for mu and phi. We will use these to plot fit lines and to generate estimates for performance in the last trial. These estimates will be for the "average" scenario and "average" person:
+First we'll generate samples of fit lines for conditional means and variances. We will use these to plot fit lines and to generate estimates for performance in the last trial. These estimates will be for the "average" scenario and "average" person:
 
 
 ```{r}
@@ -362,8 +366,8 @@ sd_lines_plot = fit_lines %>%
 sd_lines_plot
 ```
 
-```{r, fig.width = 8, fig.height = 8, eval = FALSE, include = FALSE}
-#combined plot (don't include in md output)
+```{r, fig.width = 8, fig.height = 8, include = FALSE}
+# generate combined plot as a PDF (this is for the paper, don't include in md output)
 lines_plots = plot_grid(
   post_pred_plot +
     xlab(NULL) +
@@ -385,7 +389,7 @@ lines_plots = plot_grid(
 )
 lines_plots
 
-pdf(file = "lines_plots.pdf", useDingbats = FALSE, width = 8, height = 8)
+pdf(file = "figures/lines_plots.pdf", useDingbats = FALSE, width = 8, height = 8)
 lines_plots
 dev.off()
 ```
@@ -394,7 +398,7 @@ dev.off()
 
 ## Performance on last trial
 
-The above trend lines let us see more clearly how performance evolved as people learned. But how did people perform in the last trial? Let's get estimates of the mean and precision for the "average" person in the "average" scenario on the last trial:
+The above trend lines let us see more clearly how performance evolved as people learned. But how did people perform in the last trial? Let's get estimates of the mean and standard deviation for the "average" person in the "average" scenario on the last trial:
 
 ```{r}
 last_trial = df %>%
@@ -421,7 +425,7 @@ plot_means = last_trial %>%
 plot_means
 ```
 
-Let's look at differences between each condition and the control (no uncertainty) and best-performing (dot50) conditions.
+Let's look at differences between each condition and the control (no uncertainty) and the best-performing (dot50) conditions.
 
 Difference to control:
 
@@ -455,47 +459,23 @@ plot_means_vs_dot50 = last_trial %>%
 plot_means_vs_dot50
 ```
 
-```{r, fig.width = 8, fig.height = 3, eval = FALSE, include = FALSE}
-#combined plot (not for md)
-plot_grid(
-  plot_means +
-    xlab("mean,\nlast trial")+
-    ylab(NULL), 
-  plot_means_vs_text + 
-    scale_y_discrete(labels = NULL) +
-    ylab(NULL) +
-    xlab("mean - control mean,\nlast trial") +
-    theme(axis.line.y = element_blank(), axis.ticks.y = element_blank()),
-  plot_means_vs_dot50 + 
-    scale_y_discrete(labels = NULL) +
-    ylab(NULL) +
-    xlab("mean - dot50 mean,\nlast trial") +
-    theme(axis.line.y = element_blank(), axis.ticks.y = element_blank()),
-  align = "h",
-  ncol = 3,
-  rel_widths = c(1.3, 1, 1),
-  axis = "b"
-)
-```
+For completeness, here is all pairwise differences in means on the last trial:
 
-Other misc differences: dot20
-
-```{r}
-dot20_mean_diffs = last_trial %>%
-  mutate(vis = fct_relevel(vis, "dot20")) %>%
-  compare_levels(mu, by = vis, comparison = control) 
-
-dot20_mean_diffs %>%
-  median_qi(mu * 100)
-
-dot20_mean_diffs %>%
-  ungroup() %>%
-  mutate(vis = factor(vis, levels = c(levels(vis), "dot20 - dot20"))) %>%
-  bind_rows(data_frame(vis = factor("dot20 - dot20", levels = levels(.$vis)), mu = 0)) %>%
+```{r fig.width = 8, fig.height = 8}
+last_trial %>%
+  compare_levels(mu, by = vis, comparison = pairwise) %>%
   ggplot(aes(y = vis, x = mu)) +
   geom_vline(xintercept = 0, color = "black", linetype = "dashed") +
   geom_halfeyeh(fun.data = median_qih, fatten.point = 1.3) +
-  coord_cartesian(xlim = c(-0.11, 0.01), ylim = c(1, 10.5))
+  coord_cartesian()
+```
+
+And as textual intervals:
+
+```{r}
+last_trial %>%
+  compare_levels(mu, by = vis, comparison = pairwise) %>%
+  median_qi()
 ```
 
 ### Standard deviation
@@ -503,18 +483,18 @@ dot20_mean_diffs %>%
 Conditional standard deviation (for "average" person on "average" scenario) on last trial:
 
 ```{r}
-plot_prec = last_trial %>%
+plot_sd = last_trial %>%
   ggplot(aes(y = vis, x = sd)) +
   geom_halfeyeh(fun.data = median_qih, fatten.point = 1.3) +
   geom_vline(xintercept = 0, color = "black", linetype = "dashed") +
   coord_cartesian(xlim = c(0, .12), ylim = c(1, 10.5))
-plot_prec
+plot_sd
 ```
 
 Difference to control:
 
 ```{r}
-plot_prec_vs_text = last_trial %>%
+plot_sd_vs_text = last_trial %>%
   mutate(vis = fct_relevel(vis, "none")) %>%
   compare_levels(sd, by = vis, comparison = control) %>%
   ungroup() %>%
@@ -524,13 +504,13 @@ plot_prec_vs_text = last_trial %>%
   geom_halfeyeh(fun.data = median_qih, fatten.point = 1.3) +
   geom_vline(xintercept = 0, color = "black", linetype = "dashed") +
   coord_cartesian(ylim = c(1, 10.5), xlim = c(-.06, 0.05))
-plot_prec_vs_text
+plot_sd_vs_text
 ```
 
 Difference to dot50:
 
 ```{r}
-plot_prec_vs_dot50 = last_trial %>%
+plot_sd_vs_dot50 = last_trial %>%
   mutate(vis = fct_relevel(vis, "dot50")) %>%
   compare_levels(sd, by = vis, comparison = control) %>%
   ungroup() %>%
@@ -540,57 +520,34 @@ plot_prec_vs_dot50 = last_trial %>%
   geom_vline(xintercept = 0, color = "black", linetype = "dashed") +
   geom_halfeyeh(fun.data = median_qih, fatten.point = 1.3) +
   coord_cartesian(xlim = c(0, .085), ylim = c(1, 10.5))
-plot_prec_vs_dot50
+plot_sd_vs_dot50
 ```
 
-Other misc differences: dot20
+For completeness, here is all pairwise differences in SDs on the last trial:
 
-```{r}
-dot20_prec_diffs = last_trial %>%
-  mutate(vis = fct_relevel(vis, "dot20")) %>%
-  compare_levels(sd, by = vis, comparison = control)
-
-dot20_prec_diffs %>%
-  median_qi(sd * 100)
-
-dot20_prec_diffs %>%
-  ungroup() %>%
-  mutate(vis = factor(vis, levels = c(levels(vis), "dot20 - dot20"))) %>%
-  bind_rows(data_frame(vis = factor("dot20 - dot20", levels = levels(.$vis)), sd = 0)) %>%
+```{r fig.width = 8, fig.height = 8}
+last_trial %>%
+  compare_levels(sd, by = vis, comparison = pairwise) %>%
   ggplot(aes(y = vis, x = sd)) +
   geom_vline(xintercept = 0, color = "black", linetype = "dashed") +
   geom_halfeyeh(fun.data = median_qih, fatten.point = 1.3) +
-  coord_cartesian(ylim = c(1, 10.5))
+  coord_cartesian()
 ```
 
+And as textual intervals:
 
-```{r, fig.width = 8, fig.height = 2.5, eval = FALSE, include = FALSE}
-#altogether (not for md)
-plot_grid(
-  plot_prec +
-    xlab("sd, last trial")+
-    ylab(NULL), 
-  plot_prec_vs_text + 
-    scale_y_discrete(labels = NULL) +
-    ylab(NULL) +
-    xlab("sd - text sd, last trial") +
-    theme(axis.line.y = element_blank(), axis.ticks.y = element_blank()),
-  plot_prec_vs_dot50 + 
-    scale_y_discrete(labels = NULL) +
-    ylab(NULL) +
-    xlab("sd - dot50 sd, last trial") +
-    theme(axis.line.y = element_blank(), axis.ticks.y = element_blank()),
-  align = "h",
-  ncol = 3,
-  rel_widths = c(1.3, 1, 1),
-  axis = "b"
-)
+```{r}
+last_trial %>%
+  compare_levels(sd, by = vis, comparison = pairwise) %>%
+  median_qi()
 ```
 
 
 
-```{r, fig.width = 8, fig.height = 2.5, eval = FALSE, include = FALSE}
-# Mean and SD, comparisons only, not for md
+
+
+```{r, fig.width = 8, fig.height = 2.5, include = FALSE}
+# generate combined plot as a PDF (this is for the paper, don't include in md output)
 last_trial_plots = plot_grid(
   plot_means_vs_text +
     ylab(NULL) +
@@ -601,12 +558,12 @@ last_trial_plots = plot_grid(
     ylab(NULL) +
     xlab("mean - dot50 mean, last trial") +
     theme(axis.line.y = element_blank(), axis.ticks.y = element_blank()),
-  plot_prec_vs_text + 
+  plot_sd_vs_text + 
     scale_y_discrete(labels = NULL) +
     ylab(NULL) +
     xlab("sd - text sd, last trial") +
     theme(axis.line.y = element_blank(), axis.ticks.y = element_blank()),
-  plot_prec_vs_dot50 + 
+  plot_sd_vs_dot50 + 
     scale_y_discrete(labels = NULL) +
     ylab(NULL) +
     xlab("sd - dot50 sd, last trial") +
@@ -617,7 +574,8 @@ last_trial_plots = plot_grid(
   axis = "b"
 )
 last_trial_plots
-pdf(file = "last_trial_plots.pdf", useDingbats = FALSE, width = 8, height = 2.5)
+
+pdf(file = "figures/last_trial_plots.pdf", useDingbats = FALSE, width = 8, height = 2.5)
 last_trial_plots
 dev.off()
 ```
