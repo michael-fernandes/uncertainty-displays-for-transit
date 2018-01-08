@@ -1,4 +1,4 @@
-# Data and code for *Better Deciding through Discretizing: Uncertainty Displays to Improve Transit Decision-Making* (CHI 2017)
+# Data and code for *Uncertainty Displays Using Quantile Dotplots or CDFs Improve Transit Decision-Making* (CHI 2017)
 
 [![License](https://img.shields.io/badge/license-MIT-lightgrey.svg)](LICENSE)
 [![DOI](https://img.shields.io/badge/DOI-10.1145%2F3173574.3173718-blue.svg)](http://doi.org/10.1145/3173574.3173718)
